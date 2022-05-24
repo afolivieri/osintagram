@@ -291,9 +291,16 @@ class Osintgram:
         
         if self.jsonDump:
             file_name_json = "output/" + self.target + "_comment_data.json"
+            count = 1
+            size = len(_comments)
             with open(file_name_json, 'w') as f:
                 f.write("{ \"Comments\":[ \n")
-                f.write('\n'.join(json.dumps(comment) for comment in _comments) + ',\n')
+                for comment in _comments:
+                    if count != size:
+                        f.write(json.dumps(comment) + ',\n')
+                    else:
+                        f.write(json.dumps(comment) + '\n')
+                    count += 1
                 f.write("]} ")
 
 
@@ -605,6 +612,53 @@ class Osintgram:
 
         pc.printout(str(like_counter), pc.MAGENTA)
         pc.printout(" likes in " + str(posts) + " posts\n")
+
+    def get_post_likes(self):
+        if self.check_private_profile():
+            return
+
+        pc.printout("Searching for target post likes...\n")
+        data = self.__get_feed__()
+
+        _likes = []
+        t = PrettyTable(['POST ID', 'TIMESTAMP', 'LIKES'])
+        t.align["POST ID"] = "l"
+        t.align["TIMESTAMP"] = "l"
+        t.align["LIKES"] = "l"
+
+        for post in data:
+            post_id = post.get('id')
+            timestamp = datetime.datetime.fromtimestamp(post.get('taken_at'))
+            like_count = post['like_count']
+            t.add_row([post_id, timestamp, like_count])
+            likes = {
+                "post_id": post_id,
+                "timestamp": timestamp,
+                "likes": like_count
+            }
+            _likes.append(likes)
+
+        print(t)
+        if self.writeFile:
+            file_name = "output/" + self.target + "_post_likes.txt"
+            with open(file_name, "w") as f:
+                f.write(str(t))
+                f.close()
+
+        if self.jsonDump:
+            json_file_name = "output/" + self.target + "_post_likes.json"
+            count = 1
+            size = len(_likes)
+            with open(json_file_name, 'w') as f:
+                f.write("{ \"post_likes\":[ \n")
+                for likes in _likes:
+                    if count != size:
+                        f.write(json.dumps(likes, default=str) + ',\n')
+                    else:
+                        f.write(json.dumps(likes, default=str) + '\n')
+                    count += 1
+
+                f.write("]} ")
 
     def get_media_type(self):
         if self.check_private_profile():
