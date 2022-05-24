@@ -11,6 +11,7 @@
 - hashtags        Get hashtags used by target
 - info            Get target info
 - likes           Get total likes of target's posts
+- postlikes       Get post likes of target's posts
 - mediatype       Get user's posts type (photo or video)
 - photodes        Get description of target's photos
 - photos          Download user's photos in output folder
@@ -89,6 +90,9 @@ With `JSON=n` you can disable JSON exporting.
 
 ### likes
 Return the total number of likes in target's posts
+
+### postlikes
+Return likes for each of the target's posts, with timestamps  
 
 ### list (or help)
 Show all commands available.
