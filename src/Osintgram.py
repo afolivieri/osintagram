@@ -621,20 +621,23 @@ class Osintgram:
         data = self.__get_feed__()
 
         _likes = []
-        t = PrettyTable(['POST ID', 'TIMESTAMP', 'LIKES'])
+        t = PrettyTable(['POST ID', 'TIMESTAMP', 'LIKES', 'COMMENTS'])
         t.align["POST ID"] = "l"
         t.align["TIMESTAMP"] = "l"
         t.align["LIKES"] = "l"
+        t.align["COMMENTS"] = "l"
 
         for post in data:
             post_id = post.get('id')
             timestamp = datetime.datetime.fromtimestamp(post.get('taken_at'))
             like_count = post['like_count']
-            t.add_row([post_id, timestamp, like_count])
+            comments_count = len(self.api.media_n_comments(post_id))
+            t.add_row([post_id, timestamp, like_count, comments_count])
             likes = {
                 "post_id": post_id,
                 "timestamp": timestamp,
-                "likes": like_count
+                "likes": like_count,
+                "comments": comments_count
             }
             _likes.append(likes)
 
